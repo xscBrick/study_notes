@@ -1,0 +1,989 @@
+# git 从零解读
+
+[TOC]
+
+git 是一个先进的分布式版本控制系统
+仓库（版本库）：分为本地仓库和远程仓库，简单的理解就是2个文件夹（包含一个 .git(文件夹)），
+.git目录（文件夹）：是Git来跟踪管理版本库的，git只能跟踪文本文件的改动
+本地仓库与远程仓库：其实就是2个文件夹，分别放着一些东西
+
+![版本库示意图](E:\timg.jpg)
+
+workspace：工作区
+
+staging：暂存区
+
+local repository：本地仓库
+
+remote repository：远程仓库
+
+### 初始化一个本地仓库
+
+- git init 		//创建一个空的Git仓库或重新初始化一个现有仓库
+
+> git init
+
+- git clone //克隆远程仓库代码
+
+>git clone <版本库的网址> <本地目录名>
+
+git clone  克隆远程指定分支
+
+> git clone -b <指定分支名> <远程仓库地址>
+
+### git add  将工作区的修改提交到暂存区
+
+> git add  <filename> 		//提交指定修改文件到暂存区
+> git add .  							  //提交所有修改到暂存区
+
+### git commit [将暂存区的文件提交到本地仓库]()
+
+> git commit -m "修改说明"	//将暂存区文件提交到本地仓库
+
+### 本地分支管理 git branch /git checkout 
+
+- #### git branch 一般用于分支的操作，比如创建分支，查看分支
+
+> git branch 							//查看本地分子,在当前分支前 有一个*标记
+>
+> git branch -a 						// 查看本地及远程所有分支
+>
+> git branch newbranch  	//创建新的名为:newbranch 的分支,但是还是在当前分支
+>
+> git branch -d newbranch 	//删除分支:newbranch 但是在分支中有一些未merge的提交,会删除失败,可以用 git branch -D newbranch 	进行强制删除
+>
+> git branch -vv						//查看本地对应的远程分支
+>
+> git branch -m oldBranchName newBranchName		//给分支重命名
+
+- git checkout 		//操作分支,操作文件
+
+> 操作文件
+>
+> git checkout filename //放弃单个文件的修改
+>
+> git checkout .			//放弃当前文件下的修改
+
+> 操作分支
+>
+> git checkout master			//将分支切换到主分支
+>
+> git checkout -b Dev			//将分支切换到Dev,如果Dev不存在则创建一个Dev分支再切换到Dev	
+
+
+
+### git [status]()
+
+> 用于显示工作目录和暂存区的状态。使用此命令能看到那些修改被暂存到了, 哪些没有, 哪些文件没有被Git tracked到。`git status`不显示已经`commit`到项目历史中去的信息,看项目历史的信息要使用`git log`
+
+git pull
+
+git clone
+
+git fetch
+
+git merge
+
+
+
+
+
+## git 提交规范用语
+
+https://blog.csdn.net/samjustin1/article/details/81737284
+
+feat： 新增 feature
+fix: 修复 bug
+docs: 仅仅修改了文档，比如 README, CHANGELOG, CONTRIBUTE等等
+style: 仅仅修改了空格、格式缩进、逗号等等，不改变代码逻辑
+refactor: 代码重构，没有加新功能或者修复 bug
+perf: 优化相关，比如提升性能、体验
+test: 测试用例，包括单元测试、集成测试等
+chore: 改变构建流程、或者增加依赖库、工具等
+revert: 回滚到上一个版本
+
+## git stash 
+
+### git stash
+
+> 功能 : 将改动储藏起来
+> 好处：不用add,commit后就可以切换到其特性分支进行其他特性开发
+
+```shell
+git stash -m "test_message"	//添加备份说明
+git stash push -m "test_message_push" //将工作区储藏起来（可以指定路径）
+git stash push testDir/test.txt 	//将testDIr文件夹下的test.txt 储藏起来，其他的工作区内容将不被储藏
+git stash save "test_message_save"	//将工作区储藏起来，不需要-m参数，不推荐使用，不能储藏指定路径下的文件，将会储藏整个工作区内容
+```
+
+
+
+### git stash list
+
+查看所有储藏内容，形成一个列表，最新的储藏再最上面
+
+### git stash push
+
+将工作区内容储藏起来
+
+```shell
+git stash push -m "test_message_push" //将工作区储藏起来（可以指定路径）
+git stash push testDir/test.txt 	//将testDIr文件夹下的test.txt 储藏起来，其他的工作区内容将不被储藏
+```
+
+### git stash apply
+
+将堆栈中的内容应用到当前目录，不同于git stash pop，该命令不会将内容从堆栈中删除，也就说该命令能够将堆栈的内容多次应用到工作目录中，适应于多个分支的情况。
+
+> git stash apply stash@{0}
+
+### git stash pop
+
+将储藏内容弹出并应用，储藏内容会被从储藏列表中删除
+
+> git stash pop  //返回上一个储藏，并移除
+> pop [—index] [-q|—quiet] [stash]
+> // 如指定 --index 不仅恢复工作区，也会恢复暂存区
+> git stash pop stash@{$num} 
+
+### git stash drop [-q | --quiet] [<stash>]
+
+从存储条目列表中删除单个存储条目。如果没有`<stash>`给出，则删除最新的一个。即`stash@{0}`，否则`<stash>`必须是表单的有效存储日志引用`stash@{<revision>}`。
+
+> git stash drop stash@{0}
+
+### git stash drop 后恢复
+
+```linux
+git stash drop stash@{2}
+git fsck ==lost-found 
+//dangling commit ab31326f739af821619424ab07a93907ffd1e8ef
+//dangling commit ... 可以理解为stash 的id
+//其他的dangling blob不用理会
+git show 'stash id' //dangling commit ab31326f739af821619424ab07a93907ffd1e8ef
+git show 'ab31326f739af821619424ab07a93907ffd1e8ef'
+git merge "stash id"
+```
+
+
+
+### 删除所有储藏
+
+> git stash clear
+
+#### git stash show [stash]
+
+显示和他parent的差异
+
+## git rebase
+
+## 重命名git分支名称
+
+### 重命名本地分支
+
+ 1、git branch -m old_branch_name new_branch_name
+
+### 删除远程分支
+
+ 2、 git push origin :old_origin_branch_name
+
+ 3、git push origin 修改后的分支名:修改后的分支名（push 到远程分支）
+
+ 4、git branch --set-upstream  修改后的分支名 origin/修改后的分支名（绑定远程分支）
+
+## git reset
+
+查看以往的版本
+
+git reflog
+
+查看各版本号及信息
+
+git log
+
+回退到指定版本
+
+```git
+git reflog	//查看以前的版本号
+git reset --hard HEAD@{3}   //HEAD@{3}版本号
+```
+
+
+
+
+
+## **一、 创建与合并分支**
+
+### 1、 从master分支创建dev分支并切换到dev分支：
+
+```
+   git checkout master    
+
+   git checkout -b dev
+
+```
+
+其中，git checkout -b dev 等价于：
+
+```
+   git branch dev    
+
+   git checkout dev
+
+```
+
+查看本地当前的分支，分支前面带“*”表示当前分支，剩下的分支表示本地有的分支：` `
+
+```
+   git branch
+```
+
+查看远程全部的分支，白色的表示本地有的，红色的表示本地没有，仅在远程存在：
+
+```
+   git  branch  -a
+```
+
+### 2、修改代码、提交代码（当前的操作是在dev分支上进行）
+
+```
+   git add a.html    
+
+   git commit -m "提交文件a.html"
+
+```
+
+### 3、分支合并(将dev合并到master)
+
+```
+   git checkout master    
+
+   git merge dev
+
+```
+
+### 4、合并完成后，删除dev分支.(删除dev分支时，注意我们当前所在的分支不能是dev分支)
+
+```
+   git branch -d dev
+```
+
+### 5、删除后，查看分支(此时看不到dev分支了)
+
+```
+   git branch
+```
+
+### 6、总结 ：工作中经常从master创建新的分支，具体操作如下：
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+```
+   git checkout master  
+
+   git checkout -b  issues1234  
+
+   git push origin issues1234  
+
+   git add ..  
+
+   git commit -m "***"    
+
+   git push origin issues1234
+```
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+```
+
+```
+
+注意：将本地分支branch1推到远端的branch2操作步骤：
+
+```
+       git push origin branch1:branch2
+```
+
+## 7、删除分支
+
+```
+   git branch -D   issues1234  //本地强制删除分支issues1234    
+
+   git push origin  :issues1234  //推到远程
+```
+
+ 
+
+## **二、 解决冲突**
+
+### 1、发生冲突的文件
+
+1. `  <<<<<<< HEAD`
+2. `  Creating a new branch is quick & simple.`
+3. `  =======`
+4. `  Creating a new branch is quick AND simple.`
+5. `  >>>>>>> feature1`
+
+其中，git使用`<<<<<<<`，`=======`，`>>>>>>>`标记文件中自己和别人产生冲突的部分。
+
+在`<<<<<<<`，`=======`之间为自己的代码；
+
+`=======`，`>>>>>>>`之间为别人的代码。
+
+如果保留自己的代码，将别人的代码删掉即可。
+
+### 2、冲突解决后提交
+
+```
+   git status
+   git add ***
+   git commit -m "fix conflict"
+   git push origin 分支名
+
+```
+
+## **三、Bug分支**
+
+### 1、储藏更改:将当前更改的代码储藏起来，等以后恢复使用
+
+```
+   git stash
+```
+
+ 
+
+### 2、恢复储藏的代码
+
+```
+   git stash pop //恢复的同时把stash内容删掉
+   或者
+   git stash apply  //恢复stash，但是stash内容并不删除
+   git stash drop //在上面操作的基础上，以此来删除stash
+```
+
+注： git stash list //查看全部的stash列表。
+
+### 3、将stash空间清空
+
+```
+   git stash clear
+
+```
+
+### 4、git stash pop 和 git stash apply 区别
+
+原来git stash pop stash@{id}命令会在执行后将对应的stash id 从stash list里删除，而 git stash apply stash@{id} 命令则会继续保存stash id。
+
+## **四、版本回退**
+
+### 1、回退至上一个版本
+
+```
+   git reset --hard HEAD
+```
+
+### 2、回退至指定版本
+
+```
+   git reset --hard  版本号
+```
+
+### 3、查看以往版本号(本地的commit)
+
+```
+   git reflog
+```
+
+### 4、查看各版本号及信息(所有的commit：本地commit + 其他同事的commit)
+
+```
+   git log
+```
+
+## **五、撤销修改**
+
+### 1、撤销修改（git add/rm 之前）
+
+如果git add 之前修改了文件：
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+```
+git checkout -- file_name指定文件
+
+或者
+
+git checkout -- .撤销所有
+```
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+如果git add 之前删除了文件：直接使用了rm删除（在本地版本库中）和上面的撤回命令一样
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+```
+git checkout -- file_name
+指定文件
+
+或者
+
+git checkout -- .
+撤销所有
+```
+
+[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
+### **2、git add/rm 之后，还未git commit**
+
+第一步：从暂存区撤出
+
+```
+git reset HEAD <file>reset 某个文件或者git reset HEAD .reset 所有
+```
+
+第二步：如果是 git rm 的文件，需要执行下面的，把它撤回来，add 的文件不能用（用了会撤回修改,如果想撤回修改前的，也可以用下面的命令）
+
+```
+   git  checkout -- file_name
+注：如果执行 git checkout -- . 则会吧，之前add 更改的文件也给撤回了；
+```
+
+### **3、撤销修改 git commit -m "" 、还未执行git push**
+
+- \1. 找到上次git commit的 id
+
+   git log 
+
+   找到你想撤销的commit_id
+
+- \2. git reset --hard commit_id
+
+   完成撤销,同时将代码恢复到前一commit_id 对应的版本。（不保留commit 之前修改的代码，reset之后，代码回滚到上个版本）
+
+- \3. git reset commit_id 
+
+   完成Commit命令的撤销，但是不对代码修改进行撤销，可以直接通过git commit 重新提交对本地代码的修改。（保留commit之前修改的代码，撤销后，代码是修改后的状态，还能继续修改；）
+
+## **六、对于已经push的版本，进行回退**
+
+1、第一步：
+
+```
+   git reset --hard 版本号 //本地回退到指定的版本
+
+```
+
+2、第二步：
+
+```
+   git push  -f origin dev    //将远程的也回退到指定版本
+```
+
+ 
+
+## **七、本地同步远程删除的分支**
+
+```
+   git fetch origin -p  //用来清除已经没有远程信息的分支，这样git branch -a 就不会拉取远程已经删除的分支了
+
+```
+
+## **八、删除掉没有与远程分支对应的本地分支**
+
+从gitlab上看不到的分支在本地可以通过git branch -a 查到，删掉没有与远程分支对应的本地分支：
+
+```
+   git fetch -p
+```
+
+## **九、查看远程库的一些信息，及与本地分支的信息**
+
+```
+    git remote show origin
+
+```
+
+## **十、git stash临时保存本地操作**
+
+1、使用`git stash`就可以将你当前未提交到本地（和服务器）的代码推入到Git的栈中，这时候你的工作区间和上一次提交的内容是完全一样的。
+
+2、再切换到别的分支改紧急bug。
+
+3、改完后，切到刚才的分支，使用`git stash apply`将以前一半的工作应用回来。
+
+也许有的人会说，那我可不可以多次将未提交的代码压入到栈中？答案是可以的。当你多次使用`git stash`命令后，你的栈里将充满了未提交的代码，这时候你会对将哪个版本应用回来有些困惑，`git stash list`命令可以将当前的Git栈信息打印出来，你只需要将找到对应的版本号，例如使用`git stash apply stash@{1}`就可以将你指定版本号为stash@{1}的工作取出来，当你将所有的栈都应用回来的时候，可以使用`git stash clear`来将栈清空。
+
+在这里顺便提下`git format-patch-n`, n是具体某个数字， 例如`git format-patch-1`这时便会根据log生成一个对应的补丁，如果`git format-patch-2`那么便会生成2个补丁，当然前提是你的log上有至少有两个记录。
+
+##  十一、git revert、git reset和git checkout的区别
+
+ ![img](https://images2018.cnblogs.com/blog/529808/201805/529808-20180517170332739-592932611.png)
+
+ 
+
+## **十二、git 清除缓存**
+
+清空 git缓存
+
+ 
+
+git rm -r --cached .
+
+
+
+ 
+
+读了下git文档，才发现，这些东西其实很简单，很容易理解。cached其实就是暂存区，然后一个是工作的目录，你的工作目录的东西做出修改时，会和缓存区进行对比，因此你git status时，会显示出来这个差异，
+
+因此为了使.gitignore中的内容生效，那么就删除掉暂存区，然后将所有本地文件追踪一下，就得到最新的暂存区文件。(用于处理 gitignore 没有生效）
+
+## **十三、git 忽略文件夹或者文件 ".gitignore"**
+
+**如果 git 文件夹的根目录下有这个文件，则直接填入进去；如果没有的话，git根目录新建文件 .gitignore　　（和.git 在同一文件夹下面）**
+
+```
+`#忽略该后缀的文件``*.xml``*.log``*.apk` `# 忽略文件（文件名相对路径，*表示忽略文件夹下的所有文件，） 这个是注释``data/*``debug_test/*``log/*`
+```
+
+### reset三种模式区别和使用场景
+
+#### 区别：
+
+1. **--hard**：重置位置的同时，直接将 **working Tree工作目录**、 **index 暂存区**及 **repository** 都重置成目标**Reset**节点的內容,所以效果看起来等同于清空暂存区和工作区。
+2. **--soft**：重置位置的同时，保留**working Tree工作目录**和**index暂存区**的内容，只让**repository**中的内容和 **reset** 目标节点保持一致，因此原节点和**reset**节点之间的【差异变更集】会放入**index暂存区**中(**Staged files**)。所以效果看起来就是工作目录的内容不变，暂存区原有的内容也不变，只是原节点和**Reset**节点之间的所有差异都会放到暂存区中。
+3. **--mixed（默认）**：重置位置的同时，只保留**Working Tree工作目录**的內容，但会将 **Index暂存区** 和 **Repository** 中的內容更改和reset目标节点一致，因此原节点和**Reset**节点之间的【差异变更集】会放入**Working Tree工作目录**中。所以效果看起来就是原节点和**Reset**节点之间的所有差异都会放到工作目录中。
+
+#### 使用场景:
+
+1. **--hard**：(1) **要放弃目前本地的所有改变時**，即去掉所有add到暂存区的文件和工作区的文件，可以执行 **git reset -hard HEAD** 来强制恢复git管理的文件夹的內容及状态；(2) **真的想抛弃目标节点后的所有commit**（可能觉得目标节点到原节点之间的commit提交都是错了，之前所有的commit有问题）。
+2. **--soft**：原节点和**reset**节点之间的【差异变更集】会放入**index暂存区**中(**Staged files**)，所以假如我们之前工作目录没有改过任何文件，也没add到暂存区，那么使用**reset  --soft**后，我们可以直接执行 **git commit** 將 index暂存区中的內容提交至 **repository** 中。为什么要这样呢？这样做的使用场景是：假如我们想合并「当前节点」与「**reset**目标节点」之间不具太大意义的 **commit** 记录(可能是阶段性地频繁提交,就是开发一个功能的时候，改或者增加一个文件的时候就**commit**，这样做导致一个完整的功能可能会好多个**commit**点，这时假如你需要把这些**commit**整合成一个**commit**的时候)時，可以考虑使用**reset  --soft**来让 **commit** 演进线图较为清晰。总而言之，**可以使用--soft合并commit节点**。
+3. **--mixed（默认）**：(1)使用完**reset --mixed**后，我們可以直接执行 **git add** 将這些改变果的文件內容加入 **index 暂存区**中，再执行 **git commit** 将 **Index暂存区** 中的內容提交至**Repository**中，这样一样可以达到合并**commit**节点的效果（与上面--soft合并commit节点差不多，只是多了git add添加到暂存区的操作）；(2)移除所有Index暂存区中准备要提交的文件(Staged files)，我们可以执行 **git reset HEAD** 来 **Unstage** 所有已列入 **Index暂存区** 的待提交的文件。(有时候发现add错文件到暂存区，就可以使用命令)。(3)**commit**提交某些错误代码，或者没有必要的文件也被**commit**上去，不想再修改错误再**commit**（因为会留下一个错误**commit**点），可以回退到正确的**commit**点上，然后所有原节点和**reset**节点之间差异会返回工作目录，假如有个没必要的文件的话就可以直接删除了，再**commit**上去就OK了。
+
+# [git重要的三个命令stash, checkout, reset的一些总结](https://www.cnblogs.com/shih/p/6826743.html)
+
+最近学习了git的一些重要命令的使用，总结出来跟大家分享：
+使用git的几种常见情形：
+
+（1）正常的情形，修改工作区的文件然后add，commit，我使用git一般的流程是：
+
+　　git status ——> git stash save "message..."——> git pull --> git stash pop ——> git add . 或 git add filename ——> git commit -m 'message...' ——> git push
+
+其中 . 表示所有的文件。
+
+（2）只需要撤销工作区的文件修改，即用暂存区的文件覆盖工作区中的文件
+
+　　git checkout -- filename
+
+（3）当修改的文件已经add到暂存区，需要撤销这次添加，即撤销上一次git add filename 操作：
+
+　　git reset -- filename / git reset HEAD filename
+
+　　撤销暂存区内所有的文件改动:
+
+　　git reset / git reset HEAD
+
+（4）当对上次提交不满意，可以让HEAD指针回退，而暂存区和工作区可以不用动
+
+　　git reset --soft HEAD^
+
+（5）如果让工作区不改变，而暂存区和引用（HEAD指针）回退一次
+
+　　git reset --mixed HEAD^
+
+（6）当需要彻底撤销最近的提交，HEAD指针、暂存区、工作区都回到上次的提交状态，自上一次以来的提交全部丢失
+
+　　git reset --hard HEAD^
+
+1、git stash 用于保存和恢复工作进度。
+
+git stash
+　　保存当前的工作进度。会分别对暂存区和工作区的状态进行保存。
+git stash list
+　　显示进度列表。此命令显然暗示了git stash 可以多次保存工作进度，并用在恢复时候选择。
+
+git stash drop []
+　　删除一个存储的进度。默认删除最新的进度。
+git stash clear
+　　删除所有存储的进度。
+
+其他：
+
+git stash pop [--index] []
+
+```
+            --index 参数：不仅恢复工作区，还恢复暂存区
+            <stash> 指定恢复某一个具体进度。如果没有这个参数，默认恢复最新进度
+            如：以下命令恢复编号为0的进度的工作区和暂存区
+           # git stash pop --index stash@{0}
+        （1）如果不使用任何参数，会恢复最新保存的工作进度，并将恢复的工作进度从存储的工作进度列表中清除。
+        （2）如果提供<stash>参数（来自git stash list显示的列表），则从该<stash>中恢复。恢复完毕也将从进度列表中删除<stash>。    
+        （3）选项--index除了恢复工作区的文件外，还尝试恢复暂存区。这也就是为什么恢复进度的时候显示的状态和保存进度前的略有不同。
+```
+
+git stash [save [--patch] [-k|--[no]keep-index] [-q|--quiet] []]
+
+```
+这条命令实际上是git stash命令的完整版。
+
+（1）save，即如果需要在保存工作进度的时候使 用指定的说明，必须使用如下格式：    
+
+    git stash save “message...”
+
+（2）使用参数--patch会显示工作区和HEAD的差异，通过对差异文件的编辑决定在进度中 最终要保存的工作区的内容，通过编辑差异文件可以在进度中排除无关内容。
+（3）使用-k或者--keep-index参数，在保存进度后不会将暂存区重置。默认会将暂存区和工 作区强制重置。
+```
+
+git stash apply [--index] []
+
+```
+除了不删除恢复的进度之外，其余和git stash pop 命令一样。
+```
+
+2、检出命令git checkout是git最常用的命令之一，同时也是一个很危险的命令，因为这条命令会重写工作区。
+
+检出命令的用法如下：
+
+用法一：git checkout [-q] [] [--] ...
+用法二：git checkout []
+用法三：git checkout [-m] [[-b]--orphan] ] []
+
+注：
+
+<1> 为了避免路径和引用（或者提交ID）同名而发生冲突，可以在前用两个连续的短线（短号）--作为分隔。
+<2> 在用法一中，
+
+```
+    （1）省略commit：用暂存区的文件覆盖工作区的文件。
+    （2）加上commit：用指定提交中的文件覆盖暂存区和工作区中的文件。
+```
+
+<3>在用法二中，会改变HEAD头指针
+
+```
+    （1）加上<branch>：因为只有HEAD切换到一个分支才可以对提交进行跟踪，否则仍然会进入“分离头指针”的状态。在“分离头指针”状态下的提交不能被引用关联到，从而可能丢失。
+```
+
+所以用法二（加上）最主要的作用就是切换到某分支。
+（2）省略：则相当于对工作区进行状态检查。
+
+<4>在用法三中，主要是创建和切换到新的分支（），新的分支从指定的提交开始创建。新分支和我们熟悉的master分支没有什么实质的不同，都是在refs/heads命名空间下的引用。
+
+下图所示的版本库模型图描述了git checkout实际完成的操作。
+
+![img](https://images2015.cnblogs.com/blog/760374/201705/760374-20170508191734676-320087987.gif)
+
+使用：
+
+git checkout branch
+检出branch分支。要完成图中的三个步骤，更新HEAD以指向branch分支，以及用branch 指向的树更新暂存区和工作区。
+
+git checkout / git checkout HEAD
+汇总显示工作区、暂存区与HEAD的差异。
+
+git checkout -- filename
+用暂存区中filename文件来覆盖工作区中的filename文件。相当于撤销自上次执行git add filename以来（如果执行过）的本地修改。
+
+git checkout -- . / git checkout .
+这条命令最危险！会撤销所有本地的修改（相对于暂存区）。相当于用暂存区的所有文件直接覆盖本地文件，不给用户任何确认的机会！
+
+3、git reset是Git最常用的命令之一，也是最危险最容易误用的命令。
+
+用法一：git reset [-q] [] [--] ...
+用法二：git reset [--soft --mixed | --hard | --merge | --keep] [-q] []
+
+注：
+
+（1）第一种用法（包含了路径的用法）不会重置引用，更不会改变工作区，而是用指定提交状态()下的文件()替换掉暂存区中的文件。
+
+例如：git reset HEAD
+　　相当于取消之前执行的git add 命令时改变的暂存区。
+
+（2）第二种用法（不使用路径的用法）则会重置引用。根据不同的选项，可以对暂存区或工作区进行重置。
+
+参照下面的版本库模型图，可以看不同的参数对第二种重置语法的影响。
+
+![img](https://images2015.cnblogs.com/blog/760374/201705/760374-20170508191757285-1003666560.gif)
+
+命令格式：git reset [--soft | --mixed | --hard] []
+
+（1）使用参数--soft，如 git reset --soft
+　　会执行上图中的操作①。即只更改引用的指向，不改变暂存区和工作区。
+
+（2）使用参数--mixed或者不使用参数（默认为--mixed），如 git reset
+　　会执行上图中的操作①和②。即更改引用的指向及重置暂存区，但是不改变工作区。
+
+（3）使用参数--hard，如git reset --hard
+　　会执行上图中的全部动作①、②、③，（理解为此时工作区、暂存区、commit都相同）即：
+　　　　①替换引用的指向。引用指向新的提交ID。
+　　　　②替换暂存区。替换后，暂存区的内容和引用指向的目录树一致。
+　　　　③替换工作区。替换后，工作区的内容变得和暂存区一致，也和HEAD所指向的目录树内容相同。
+注： 引用即HEAD指针
+
+使用：
+
+git reset / git reset HEAD
+仅用HEAD指向的目录树重置暂存区，工作区不会受到影响，相当于将之前用git add命令更新到暂存区的内容撤出暂存区。引用也未改变，因为引用重置到HEAD相当于没有重置。
+
+git reset -- filename / git reset HEAD filename
+仅将文件filename 的改动撤出暂存区，暂存区中其他文件不改变。相当于命令git add filename 的反射操作。
+
+git reset --soft HEAD^
+工作区和暂存区不改变，但是引用向前回退一次。当对最新的提交说明或者提交的更改不满意时，撤销最新的提交以便重新提交。
+之前提到过修补提交命令git commit --amend，用于对最新的提交进行重新提交以修补错误的提交说明或者错误的提交文件。修补提交命令实际上相当于执行了下面两条命令。（注：文件.git/COMMIT_EDITMSG保存了上次的提交日志）
+　　git reset --soft HEAD^
+　　git commit -e -F .git/COMMIT_EDITMSG
+
+git reset HEAD^ / git reset --mixed HEAD^
+工作区不改变，但是暂存区会回退到上一次提交之前，引用也会回退一次。
+
+git reset --hard HEAD^
+彻底撤销最近的提交。引用回退到前一次，而且工作区和暂存区都会回退到上一次提交的状态。自上一次以来的提交全部丢失。
+
+有时候，我们用Git的时候有可能commit提交代码后，发现这一次commit的内容是有错误的，那么有两种处理方法：
+ 1、修改错误内容，再次commit一次 2、使用**git reset** 命令撤销这一次错误的commit
+ 第一种方法比较直接，但会多次一次commit记录。
+ 而我个人更倾向第二种方法，错误的commit没必要保留下来。
+ 那么今天来说一下**git reset**。它的一句话概括
+
+```undefined
+git-reset - Reset current HEAD to the specified state
+```
+
+意思就是可以让HEAD这个指针指向其他的地方。例如我们有一次commit不是不是很满意，需要回到上一次的Commit里面。那么这个时候就需要通过reset，把HEAD指针指向上一次的commit的点。
+ 它有三种模式，soft,mixed,hard，具体的使用方法下面这张图，展示的很全面了。
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-fcad08ebe26933a6.png?imageMogr2/auto-orient/strip|imageView2/2/w/638/format/webp)
+
+git各个区域和命令关系
+
+
+
+这三个模式理解了，对于使用这个命令很有帮助。在理解这三个模式之前，需要略微知道一点Git的基本流程。正如上图，Git会有三个区域：
+
+-  **Working Tree** 当前的工作区域
+-  **Index/Stage** 暂存区域，和git stash命令暂存的地方不一样。使用git add xx，就可以将xx添加近Stage里面
+-  **Repository** 提交的历史，即使用git commit提交后的结果
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-5b04868bd09cb72a.png?imageMogr2/auto-orient/strip|imageView2/2/w/546/format/webp)
+
+文件存入Repository流程
+
+以下简单敘述一下把文件存入Repository流程：
+
+1. 刚开始 working tree 、 index 与 repository(HEAD)里面的內容都是一致的
+
+   ![img](https:////upload-images.jianshu.io/upload_images/4428238-fb3e9ca4dce0328c.png?imageMogr2/auto-orient/strip|imageView2/2/w/469/format/webp)
+
+   阶段1
+
+2. 当git管理的文件夹里面的内容出现改变后，此時 working tree 的內容就会跟 index 及 repository(HEAD)的不一致，而Git知道是哪些文件(Tracked File)被改动过，直接将文件状态设置为 modified (Unstaged files)。
+
+   ![img](https:////upload-images.jianshu.io/upload_images/4428238-e92ef69bc699fad5.png?imageMogr2/auto-orient/strip|imageView2/2/w/465/format/webp)
+
+   阶段2
+
+3. 当我們执行 git add 后，会将这些改变的文件內容加入 index 中 (Staged files)，所以此时working tree跟index的內容是一致的，但他们与repository(HEAD)內容不一致。
+
+   ![img](https:////upload-images.jianshu.io/upload_images/4428238-0b04f397c336d245.png?imageMogr2/auto-orient/strip|imageView2/2/w/466/format/webp)
+
+   阶段3
+
+4. 接着执行 git commit 後，將Git索引中所有改变的文件內容提交至 Repository 中，建立出新的 commit 节点(HEAD)后， working tree 、 index 與与repository(HEAD)区域的内容 又会保持一致。
+
+   ![img](https:////upload-images.jianshu.io/upload_images/4428238-75a651c0a39381a0.png?imageMogr2/auto-orient/strip|imageView2/2/w/473/format/webp)
+
+   阶段4
+
+### 实战演示
+
+### reset --hard：重置stage区和工作目录:
+
+**reset --hard** 会在重置 **HEAD** 和**branch**的同时，重置stage区和工作目录里的内容。当你在 **reset** 后面加了 **--hard** 参数时，你的stage区和工作目录里的内容会被完全重置为和**HEAD**的新位置相同的内容。换句话说，就是你的没有**commit**的修改会被全部擦掉。
+
+例如你在上次 **commit** 之后又对文件做了一些改动：把修改后的**ganmes.txt**文件**add**到**stage区**，修改后的**shopping list.txt**保留在**工作目录**
+
+```shell
+git status
+```
+
+
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-1c22b16e14586320.png?imageMogr2/auto-orient/strip|imageView2/2/w/621/format/webp)
+
+最初状态
+
+
+ 然后，你执行了并附上了参数：
+
+```shell
+git reset --hard HEAD^
+```
+
+你的 **HEAD \**和当前\** branch** 切到上一条**commit** 的同时，你工作目录里的新改动和已经add到stage区的新改动也一起全都消失了：
+
+```shell
+git status
+```
+
+
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-3e57cea5e5400c94.png?imageMogr2/auto-orient/strip|imageView2/2/w/355/format/webp)
+
+reset --hard head^之后
+
+
+ 可以看到，在  后，所有的改动都被擦掉了。
+
+### reset --soft：保留工作目录，并把重置 HEAD 所带来的新的差异放进暂存区
+
+**reset --soft** 会在重置 **HEAD** 和 **branch** 时，保留工作目录和暂存区中的内容，并把重置 **HEAD** 所带来的新的差异放进暂存区。
+
+什么是「重置 **HEAD** 所带来的新的差异」？就是这里：
+
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-75ef41dc9eec6f8e?imageMogr2/auto-orient/strip|imageView2/2/w/478/format/webp)
+
+
+
+由于 **HEAD** 从 4 移动到了 3，而且在 reset 的过程中工作目录和暂存区的内容没有被清理掉，所以 4 中的改动在 **reset** 后就也成了工作目录新增的「工作目录和 **HEAD** 的差异」。这就是上面一段中所说的「重置 **HEAD** 所带来的差异」。
+
+此模式下会保留 **working tree工作目录**的內容，不会改变到目前所有的git管理的文件夹的內容；也会
+ 保留 **index暂存区**的內容，让 **index 暂存区**与 **working tree** 工作目录的內容是一致的。就只有 **repository** 中的內容的更变需要与 **reset** 目标节点一致，因此原始节点与**reset**节点之间的差异变更集合会存在与index暂存区中(**Staged files**)，所以我们可以直接执行 **git commit** 將 **index暂存区**中的內容提交至 **repository** 中。当我们想合并「当前节点」与「reset目标节点」之间不具太大意义的 **commit** 记录(可能是阶段性地频繁提交)時，可以考虑使用 **Soft Reset** 来让 **commit** 演进线图较为清晰点。
+
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-2fcf8c37b866d331.png?imageMogr2/auto-orient/strip|imageView2/2/w/422/format/webp)
+
+
+
+所以在同样的情况下，还是老样子：把修改后的**ganmes.txt**文件**add**到**stage区**，修改后的**shopping list.txt**保留在**工作目录**
+
+```shell
+git status
+```
+
+
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-0e5563f9d547f694.png?imageMogr2/auto-orient/strip|imageView2/2/w/621/format/webp)
+
+最初状态
+
+
+ 假设此时当前  的改动内容是新增了  文件：
+
+```shell
+git show --stat
+```
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-1ac751cca1b142da.png?imageMogr2/auto-orient/strip|imageView2/2/w/533/format/webp)
+
+git show --stat
+
+如果这时你执行：
+
+```shell
+git reset --soft HEAD^
+```
+
+那么除了 **HEAD** 和它所指向的 **branch1** 被移动到 **HEAD^** 之外，原先 **HEAD** 处 **commit** 的改动（也就是那个 **laughters.txt** 文件）也会被放进暂存区：
+
+```shell
+git status
+```
+
+
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-65f172789e8446da.png?imageMogr2/auto-orient/strip|imageView2/2/w/626/format/webp)
+
+使用git reset --soft HEAD^后
+
+
+ 这就是 和  的区别： 会清空工作目录和暂存区的改动,*而 。
+
+### reset 不加参数(mixed)：保留工作目录，并清空暂存区
+
+**reset** 如果不加参数，那么默认使用 **--mixed** 参数。它的行为是：保留工作目录，并且清空暂存区。也就是说，工作目录的修改、暂存区的内容以及由 **reset** 所导致的新的文件差异，都会被放进工作目录。简而言之，就是「把所有差异都混合（mixed）放在工作目录中」。
+
+还以同样的情况为例：
+
+```shell
+git status
+```
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-5e1d7adf0b472564.png?imageMogr2/auto-orient/strip|imageView2/2/w/621/format/webp)
+
+最初状态
+
+**修改了 的games.txt 和 shopping list.txt，并把 games.txt 放进了暂存区。**
+
+```shell
+git show --stat
+```
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-5ed83eef2b0c00e7.png?imageMogr2/auto-orient/strip|imageView2/2/w/533/format/webp)
+
+git show --stat
+
+**最新的 commit 中新增了 laughters.txt 文件。**
+
+这时如果你执行**无参数**的**reset**或者带**--mixed**参数：
+
+```shell
+git reset HEAD^
+git reset --mixed HEAD^
+```
+
+工作目录的内容和 **--soft** 一样会被保留，但和 **--soft** 的区别在于，它会把暂存区清空,并把原节点和**reset**节点的差异的文件放在工作目录，总而言之就是，工作目录的修改、暂存区的内容以及由 **reset** 所导致的新的文件差异，都会被放进工作目录
+
+```shell
+git status
+```
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-64770040c28c4c97.png?imageMogr2/auto-orient/strip|imageView2/2/w/625/format/webp)
+
+git reset HEAD^之后
+
+# 总结
+
+### reset 的本质：移动 HEAD 以及它所指向的 branch
+
+实质上，**reset** 这个指令虽然可以用来撤销 **commit** ，但它的实质行为并不是撤销，而是移动 **HEAD** ，并且「捎带」上 **HEAD** 所指向的 **branch**（如果有的话）。也就是说，**reset** 这个指令的行为其实和它的字面意思 "**reset**"（重置）十分相符：它是用来重置 **HEAD** 以及它所指向的 **branch** 的位置的。
+
+而 **reset --hard HEAD^** 之所以起到了撤销 **commit** 的效果，是因为它把 **HEAD** 和它所指向的 branch 一起移动到了当前 **commit** 的父 **commit** 上，从而起到了「撤销」的效果：
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-6dbab74ae9ad2e1f?imageMogr2/auto-orient/strip|imageView2/2/w/466/format/webp)
+
+git reset
+
+Git 的历史只能往回看，不能向未来看，所以把 **HEAD** 和 **branch** 往回移动，就能起到撤回 **commit** 的效果。
+
+所以同理，**reset --hard** 不仅可以撤销提交，还可以用来把 **HEAD** 和 **branch** 移动到其他的任何地方。
+
+```shell
+git reset --hard branch2
+```
+
+![img](https:////upload-images.jianshu.io/upload_images/4428238-71f7141a3878da7e?imageMogr2/auto-orient/strip|imageView2/2/w/434/format/webp)
+
+git reset --hard branch2
+
+### reset三种模式区别和使用场景
+
+#### 区别：
+
+1. **--hard**：重置位置的同时，直接将 **working Tree工作目录**、 **index 暂存区**及 **repository** 都重置成目标**Reset**节点的內容,所以效果看起来等同于清空暂存区和工作区。
+2. **--soft**：重置位置的同时，保留**working Tree工作目录**和**index暂存区**的内容，只让**repository**中的内容和 **reset** 目标节点保持一致，因此原节点和**reset**节点之间的【差异变更集】会放入**index暂存区**中(**Staged files**)。所以效果看起来就是工作目录的内容不变，暂存区原有的内容也不变，只是原节点和**Reset**节点之间的所有差异都会放到暂存区中。
+3. **--mixed（默认）**：重置位置的同时，只保留**Working Tree工作目录**的內容，但会将 **Index暂存区** 和 **Repository** 中的內容更改和reset目标节点一致，因此原节点和**Reset**节点之间的【差异变更集】会放入**Working Tree工作目录**中。所以效果看起来就是原节点和**Reset**节点之间的所有差异都会放到工作目录中。
+
+#### 使用场景:
+
+1. **--hard**：(1) **要放弃目前本地的所有改变時**，即去掉所有add到暂存区的文件和工作区的文件，可以执行 **git reset -hard HEAD** 来强制恢复git管理的文件夹的內容及状态；(2) **真的想抛弃目标节点后的所有commit**（可能觉得目标节点到原节点之间的commit提交都是错了，之前所有的commit有问题）。
+2. **--soft**：原节点和**reset**节点之间的【差异变更集】会放入**index暂存区**中(**Staged files**)，所以假如我们之前工作目录没有改过任何文件，也没add到暂存区，那么使用**reset  --soft**后，我们可以直接执行 **git commit** 將 index暂存区中的內容提交至 **repository** 中。为什么要这样呢？这样做的使用场景是：假如我们想合并「当前节点」与「**reset**目标节点」之间不具太大意义的 **commit** 记录(可能是阶段性地频繁提交,就是开发一个功能的时候，改或者增加一个文件的时候就**commit**，这样做导致一个完整的功能可能会好多个**commit**点，这时假如你需要把这些**commit**整合成一个**commit**的时候)時，可以考虑使用**reset  --soft**来让 **commit** 演进线图较为清晰。总而言之，**可以使用--soft合并commit节点**。
+3. **--mixed（默认）**：(1)使用完**reset --mixed**后，我們可以直接执行 **git add** 将這些改变果的文件內容加入 **index 暂存区**中，再执行 **git commit** 将 **Index暂存区** 中的內容提交至**Repository**中，这样一样可以达到合并**commit**节点的效果（与上面--soft合并commit节点差不多，只是多了git add添加到暂存区的操作）；(2)移除所有Index暂存区中准备要提交的文件(Staged files)，我们可以执行 **git reset HEAD** 来 **Unstage** 所有已列入 **Index暂存区** 的待提交的文件。(有时候发现add错文件到暂存区，就可以使用命令)。(3)**commit**提交某些错误代码，或者没有必要的文件也被**commit**上去，不想再修改错误再**commit**（因为会留下一个错误**commit**点），可以回退到正确的**commit**点上，然后所有原节点和**reset**节点之间差异会返回工作目录，假如有个没必要的文件的话就可以直接删除了，再**commit**上去就OK了
+
+## git 查看具体修改地方 git diff
+
+
+
+## git 中文乱码
+
