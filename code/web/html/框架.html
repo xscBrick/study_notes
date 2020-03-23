@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>框架</title>
+</head>
+<!-- 
+    何为框架，将一个浏览器窗口分隔为多个小窗口，每一个小窗口都可以存放一个html 页面
+ -->
+<frameset rows="100, 200, *">
+    <frame src="top.html"/>
+    <frame src="buttom.html"/>
+    <frameset cols="180,*" >
+        <frame src="left.html" />
+        <frame src="right.html" />
+    </frameset>
+</frameset>
+</html>
