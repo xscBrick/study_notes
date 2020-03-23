@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<!-- 
+    如果我们要实现 框架网页就需要将 frameset标签取代 body 标签
+    将一个浏览器窗口分隔为 100 像素的高，其他的高应该都给下窗口
+
+    frame 不能分隔，只能表示小窗口
+ -->
+<frameset rows="100,*"  noresize>
+    <!-- 表示上窗口 -->
+    <frame src="http://www.baidu.com">
+        <!-- -->
+        <frameset cols="100,*">
+            <!-- 左边小窗口 -->
+            <frame src="http://www.qq.com"  scrolling="no"/>
+            <!-- 右边窗口 -->
+            <frame src="http://www.taobao.com" />
+        </frameset>
+</frameset>
+</html>
