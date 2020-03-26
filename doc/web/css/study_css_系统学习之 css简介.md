@@ -108,3 +108,39 @@ style 属性可以防止在 HTML 文件的 任意位置，不过一般放在 hea
 
 需要将这个 css 文件引入到 html 文件中 ， 通过link 标签引入
 
+```
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./common.css">
+</head>
+<body>
+    <p>这个是一个测试css 外链式文件代码</p>
+</body>
+```
+
+```css
+p{
+    color: #ff0000;
+    font: outline;
+    size: 50px;
+}
+```
+
+![image-20200326095523282](C:\Users\22909\AppData\Roaming\Typora\typora-user-images\image-20200326095523282.png)
+
+## 2.3 行内式
+
+通过行内式来书写 css代码 写在标签的style 属性中
+
+```html
+ <p style="color: #ff0000;">行内样式test</p>
+```
+
+
+
+关于嵌入式与外链式 之间的优缺点
+
+外链式更优：可以被多个 html 文件引用
+
